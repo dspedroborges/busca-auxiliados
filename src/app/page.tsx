@@ -37,6 +37,7 @@ export default function Page() {
           <div className="text-green-600 my-4 text-center bg-green-50 p-2 rounded-xl font-bold w-full md:w-1/3 mx-auto">{formState.message}</div>
         )
       }
+      <p className="text-center bg-gray-100 rounded-xl border border-gray-600 p-2 w-full md:w-1/2 my-4 mx-auto">Em virtude da impossibilidade de enviar arquivos muito pesados para o Github, este buscador realiza busca somente de pessoas do Distrito Federal, a fim de demonstração. Porém, você pode encontrar o link para a base de dados completa no readme do repositório deste projeto. Basta clonar o repositório e substituir o arquivo all_df.db pelo all.db.</p>
       <form action={action} defaultValue={formState.message} className="mt-8 mx-auto flex flex-col items-center justify-center gap-8 w-full md:w-1/3 md:border p-8 rounded-xl">
         <h2 className="font-bold text-3xl text-blue-800">Busca</h2>
         <div className="w-full flex flex-col gap-2">
