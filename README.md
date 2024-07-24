@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Busca Auxiliados
 
-## Getting Started
+Em virtude da impossibilidade de enviar arquivos muito pesados para o Github, este buscador realiza busca somente de pessoas do Distrito Federal, a fim de demonstração. Porém, você pode encontrar o link para a base de dados completa no readme do repositório deste projeto. Basta clonar o repositório e substituir o arquivo all_df.db pelo all.db.
 
-First, run the development server:
+## Instalação
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Faça download da base de dados completa no seguinte link:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+https://drive.google.com/file/d/1BB6JiekFSvaLLuwUSzcoM2NzFC07YYhp/view?usp=sharing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Clone o repositório, abra-o e digite npm install para instalar todas as dependências. Em seguida, use o comando npm run dev para executar o projeto no endereço http://localhost:3000/
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Como a base de dados foi feita
 
-## Learn More
+Todos os arquivos .csv disponíveis no Portal da Transparência foram baixados (https://portaldatransparencia.gov.br/download-de-dados/auxilio-emergencial). Em seguida, fazendo-se uso de NodeJS, percorri todos os arquivos de 5 milhões em 5 milhões, a fim de não sobrecarregar a memória, e já aproveitando para filtrar somente com os dados que eu queria: nome, cpf, uf e município.
 
-To learn more about Next.js, take a look at the following resources:
+Depois, com vários .csv criados, cada um contendo 5 milhões de registros, eu os unifiquei usando a biblioteca csv-merger (https://www.npmjs.com/package/csv-merger).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A fim de remover as duplicatas, transformei o .csv unificado em arquivo sqlite3, da seguinte maneira:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. sqlite3 all.db "CREATE TABLE people (uf TEXT, municipio TEXT, nome TEXT, cpf TEXT);"
+2. sqlite3 all.db
+3. .mode csv
+4. .import all.csv people
 
-## Deploy on Vercel
+Depois, removi as duplicatas estado por estado, a fim de não sobrecarregar a memória. Por exemplo, para o estado do Acre, fiz:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. .mode column
+2. .mode csv
+3. .output student_details.csv
+4. SELECT DISTINCT uf, municipio, nome, cpf FROM people WHERE uf = 'AC';
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Dessa maneira, obtive um arquivo csv para cada estado, sem duplicatas. Então, novamente usei o csv-merger para unir todos os estados e importei o csv unificado novamente para um sqlite, só que dessa vez sem as duplicatas. Esse arquivo sqlite contém 68 milhões de registros diferentes e pode ser baixado no link do drive passado acima.
